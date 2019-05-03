@@ -134,9 +134,17 @@ include_directories(
 
 add_executable(cv_sweep_test
   src/cv_sweep.cpp
-  src/cv_sweep_test.cpp
-)
+  src/cv_sweep_test.cpp)
+
 target_link_libraries(cv_sweep_test
+    ${OpenCV_LIBS}
+    ${catkin_LIBRARIES})
+
+add_executable(depth_map_test
+  src/depth_map.cpp
+  src/depth_map_test.cpp)
+
+target_link_libraries(depth_map_test
     ${OpenCV_LIBS}
     ${catkin_LIBRARIES})
 

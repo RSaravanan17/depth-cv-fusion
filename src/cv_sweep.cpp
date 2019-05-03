@@ -20,7 +20,7 @@ bool cv_sweep(ros::NodeHandle nh, const sensor_msgs::Image &image,
 
   // Wait for the action server to launch
   if (!cv_sweep_ac->waitForServer(ros::Duration(10.0))) {
-	  std::cout <<
+    std::cout <<
         "Failed to connect to CvSweepActionClient. Is Darknet running?" <<
         std::endl;
 	  return false;
