@@ -28,7 +28,7 @@ void cv_sweep_cb(const actionlib::SimpleClientGoalState& state,
   @param dest destination for sweep results
   @return whether or not the sweep succeeded
 */
-bool cv_sweep(ros::NodeHandle nh, const sensor_msgs::Image &image,
+bool cv_sweep(ros::NodeHandle &nh, const sensor_msgs::Image &image,
     darknet_ros_msgs::BoundingBoxes *dest);
 
 /**
@@ -39,5 +39,5 @@ bool cv_sweep(ros::NodeHandle nh, const sensor_msgs::Image &image,
   @param dest destination for sweep results
   @return whether or not the sweep succeeded
 */
-bool cv_sweep_local(ros::NodeHandle nh, const std::string &image_path,
+bool cv_sweep_local(ros::NodeHandle &nh, const std::string &image_path,
     darknet_ros_msgs::BoundingBoxes *dest);

@@ -7,7 +7,7 @@ void cv_sweep_cb(const actionlib::SimpleClientGoalState& state,
   *cv_sweep_result_dest = result->bounding_boxes;
 }
 
-bool cv_sweep(ros::NodeHandle nh, const sensor_msgs::Image &image,
+bool cv_sweep(ros::NodeHandle &nh, const sensor_msgs::Image &image,
     darknet_ros_msgs::BoundingBoxes *dest) {
   CvSweepActionClientPtr cv_sweep_ac;
 
@@ -20,9 +20,7 @@ bool cv_sweep(ros::NodeHandle nh, const sensor_msgs::Image &image,
 
   // Wait for the action server to launch
   if (!cv_sweep_ac->waitForServer(ros::Duration(10.0))) {
-    std::cout <<
-        "Failed to connect to CvSweepActionClient. Is Darknet running?" <<
-        std::endl;
+    ROS_INFO("Failed to connect to CvSweepActionClient. Is Darknet running?");
 	  return false;
   }
 
@@ -40,23 +38,22 @@ bool cv_sweep(ros::NodeHandle nh, const sensor_msgs::Image &image,
 
   // Wait for result
   if (!cv_sweep_ac->waitForResult(ros::Duration(120.0))) {
-    std::cout << "CvSweepActionClient took too long to respond!" << std::endl;
+    ROS_INFO("CvSweepActionClient took too long to respond!");
     return false;
   }
 
   // Compute duration and conclude
   ros::Time t_sweep_end = ros::Time::now();
 
-  std::cout << "[cv_sweep] Identified " <<
-      cv_sweep_result_dest->bounding_boxes.size() << " objects in " <<
-      t_sweep_end - t_sweep_begin << " seconds" << std::endl;
+  ROS_INFO("[cv_sweep] Identified %d objects in %f seconds",
+      cv_sweep_result_dest->bounding_boxes.size(), t_sweep_end - t_sweep_begin);
 
   return true;
 }
 
-bool cv_sweep_local(ros::NodeHandle nh, const std::string &image_path,
+bool cv_sweep_local(ros::NodeHandle &nh, const std::string &image_path,
     darknet_ros_msgs::BoundingBoxes *dest) {
-  std::cout <<"[cv_sweep_local] Loading image..." << std::endl;
+  ROS_INFO("[cv_sweep_local] Loading image...");
 
   // Pack image into appropriate message type
   cv_bridge::CvImage image_bridge;
@@ -65,8 +62,7 @@ bool cv_sweep_local(ros::NodeHandle nh, const std::string &image_path,
   cv::Mat cv_image = cv::imread(image_path, CV_LOAD_IMAGE_COLOR);
 
   if (cv_image.empty()) {
-    std::cout << "[cv_sweep_local] Failed to load file \"" << image_path <<
-        "\"" << std::endl;
+    ROS_INFO("[cv_sweep_local] Failed to load file \"%s\"", image_path);
     return false;
   }
 
@@ -76,7 +72,7 @@ bool cv_sweep_local(ros::NodeHandle nh, const std::string &image_path,
     cv_bridge::CvImage(header, sensor_msgs::image_encodings::BGR8, cv_image);
   image_bridge.toImageMsg(image_msg);
 
-  std::cout <<"[cv_sweep_local] Starting sweep..." << std::endl;
+  ROS_INFO("[cv_sweep_local] Starting sweep...");
 
   return cv_sweep(nh, image_msg, dest);
 }

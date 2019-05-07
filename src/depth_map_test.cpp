@@ -1,5 +1,6 @@
-#include <cv_bridge/cv_bridge.h>
 #include "fri_stickler/depth_map.h"
+
+#include <cv_bridge/cv_bridge.h>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <ros/ros.h>
