@@ -54,9 +54,22 @@ public:
 
   void process() {
     FusionProcessor proc(image_width, image_height);
-    proc.intersection_knockout(depth_map, boxes, "bottle");
+
+    int focus_index = -1;
+    for (int i = 0; i < boxes.bounding_boxes.size(); i++)
+      if (boxes.bounding_boxes[i].Class == "keyboard") {
+        focus_index = i;
+        break;
+      }
+
+    if (focus_index == -1) {
+      ROS_INFO("Failed to detect target in frame");
+      return;
+    }
+
+    float depth = proc.estimate_distance(depth_map, boxes, focus_index);
     pub_depth_knockout.publish(depth_map.get_image_msg());
-    ROS_INFO("Fusion processed!");
+    ROS_INFO("Estimated distance: %f", depth);
   }
 };
 

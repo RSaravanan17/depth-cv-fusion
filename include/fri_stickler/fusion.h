@@ -27,8 +27,19 @@ public:
 
     @param depth_map map to edit
     @param boxes object bounding boxes produced by YOLO
-    @param focus_label label of box not to remove
+    @param focus_index index in bounding box list of object of interest
   */
   void intersection_knockout(DepthMap &depth_map,
-      darknet_ros_msgs::BoundingBoxes &boxes, std::string focus_label);
+      darknet_ros_msgs::BoundingBoxes &boxes, int focus_label);
+
+  /**
+    Estimate the distance between the camera lens and a bounding box. This is
+    the pinnacle function of the project.
+
+    @param depth_map depth map of scene
+    @param boxes object bounding boxes produced by YOLO
+    @param focus_index index in bounding box list of object of interest
+  */
+  float estimate_distance(DepthMap &depth_map,
+      darknet_ros_msgs::BoundingBoxes &boxes, int focus_index);
 };
