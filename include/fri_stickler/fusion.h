@@ -13,8 +13,8 @@
 class FusionProcessor {
 protected:
   // Arbitrary constants for aligning the IR and RGB images from the Kinect
-  const float X_ALPHA = 22; // 27
-  const float Y_ALPHA = -30;
+  const float X_ALPHA = 22; // 27 for keyboard, 22 for mug, 0 for chair
+  const float Y_ALPHA = -30; // Don't touch
 
   // find_extreme configuration
   const float FDEXT_MINIMUM_EXTREME = 0.1;

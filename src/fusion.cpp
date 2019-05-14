@@ -20,7 +20,7 @@ int FusionProcessor::find_extreme(std::vector<float> &dat, int partitions,
     for (int pos = lower; pos < upper; pos += w) {
       int pos_end = pos + w > upper ? upper - 1 : pos + w;
       float slope = fabs(dat[pos_end] - dat[pos]) / w;
-      if (slope > record_high && slope > minimum_extreme) {
+      if (slope > record_high) {
         dirty_distance_total += std::max(dat[pos], dat[pos_end]);
         dirty_distance_points_processed++;
         record_high = slope;
@@ -99,7 +99,7 @@ float FusionProcessor::estimate_distance(DepthMap &depth_map,
     // Eliminate lower extreme
     int p = find_extreme(col, FDEXT_PARTITIONS, FDEXT_THOROUGHNESS,
         FDEXT_MINIMUM_EXTREME);
-    for (int j = 0; j < p; j++) {
+    for (int j = 0; j <= p; j++) {
       x_fdext.push_back(i + X_ALPHA);
       y_fdext.push_back(focus_box.ymin + j + Y_ALPHA);
     }
@@ -109,7 +109,7 @@ float FusionProcessor::estimate_distance(DepthMap &depth_map,
 
     p = find_extreme(col, FDEXT_PARTITIONS, FDEXT_THOROUGHNESS,
         FDEXT_MINIMUM_EXTREME);
-    for (int j = 0; j < p; j++) {
+    for (int j = 0; j <= p; j++) {
       x_fdext.push_back(i + X_ALPHA);
       y_fdext.push_back(focus_box.ymax - j + Y_ALPHA);
     }
@@ -125,7 +125,7 @@ float FusionProcessor::estimate_distance(DepthMap &depth_map,
     // Eliminate lower extreme
     int p = find_extreme(row, FDEXT_PARTITIONS, FDEXT_THOROUGHNESS,
         FDEXT_MINIMUM_EXTREME);
-    for (int j = 0; j < p; j++) {
+    for (int j = 0; j <= p; j++) {
       x_fdext.push_back(focus_box.xmin + j + X_ALPHA);
       y_fdext.push_back(i + Y_ALPHA);
     }
@@ -135,7 +135,7 @@ float FusionProcessor::estimate_distance(DepthMap &depth_map,
 
     p = find_extreme(row, FDEXT_PARTITIONS, FDEXT_THOROUGHNESS,
         FDEXT_MINIMUM_EXTREME);
-    for (int j = 0; j < p; j++) {
+    for (int j = 0; j <= p; j++) {
       x_fdext.push_back(focus_box.xmax - j + X_ALPHA);
       y_fdext.push_back(i + Y_ALPHA);
     }
@@ -149,7 +149,7 @@ float FusionProcessor::estimate_distance(DepthMap &depth_map,
   float dirty_distance_avg =
       dirty_distance_total / dirty_distance_points_processed;
   ROS_INFO("[estimate_distance] Dirty distance is %f m", dirty_distance_avg);
-  
+
   for (int r = focus_box.xmin; r <= focus_box.xmax; r++)
     for (int c = focus_box.ymin; c <= focus_box.ymax; c++) {
       float depth = depth_map.get_depth(r + X_ALPHA, c + Y_ALPHA);
