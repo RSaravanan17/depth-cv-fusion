@@ -46,4 +46,9 @@ public:
     @brief Gets a visualizable ROS image of the map
   */
   sensor_msgs::Image get_image_msg();
+
+  /**
+    @brief Gets a pointer to the internal matrix
+  */
+  cv::Mat* get_mat();
 };

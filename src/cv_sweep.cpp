@@ -20,7 +20,7 @@ bool cv_sweep(ros::NodeHandle &nh, const sensor_msgs::Image &image,
 
   // Wait for the action server to launch
   if (!cv_sweep_ac->waitForServer(ros::Duration(10.0))) {
-    ROS_INFO("Failed to connect to CvSweepActionClient. Is Darknet running?");
+    ROS_INFO("[cv_sweep] Failed to connect to CvSweepActionClient. Is Darknet running?");
 	  return false;
   }
 
@@ -38,7 +38,7 @@ bool cv_sweep(ros::NodeHandle &nh, const sensor_msgs::Image &image,
 
   // Wait for result
   if (!cv_sweep_ac->waitForResult(ros::Duration(120.0))) {
-    ROS_INFO("CvSweepActionClient took too long to respond!");
+    ROS_INFO("[cv_sweep] CvSweepActionClient took too long to respond!");
     return false;
   }
 
