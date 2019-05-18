@@ -152,7 +152,8 @@ add_executable(fusion_test
   src/depth_map.cpp
   src/cv_sweep.cpp
   src/fusion.cpp
-  src/fusion_test.cpp)
+  src/fusion_test.cpp
+  src/clustering.cpp)
 
 target_link_libraries(fusion_test
     ${OpenCV_LIBS}

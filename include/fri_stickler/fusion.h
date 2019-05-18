@@ -1,3 +1,4 @@
+#include "fri_stickler/clustering.h"
 #include "fri_stickler/depth_map.h"
 
 #include <cv_bridge/cv_bridge.h>
@@ -25,6 +26,8 @@ protected:
   const float DEPTH_WHITE = 5;
   const float DIRTY_SIMILARITY_THRESH = 0.95;
   const float INTERQUARTILE = 0.8;
+
+  PointClusters extrema_clusters;
 
   int image_width, image_height;
   float dirty_distance_total;

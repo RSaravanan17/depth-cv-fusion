@@ -6,6 +6,12 @@
 #include <ros/ros.h>
 #include <vector>
 
+FusionProcessor::FusionProcessor(int width, int height) :
+    extrema_clusters(1, 0.25) {
+  image_width = width;
+  image_height = height;
+}
+
 int FusionProcessor::find_extreme(std::vector<float> &dat, int partitions,
     int thoroughness, float minimum_extreme) {
   int w = dat.size() / partitions, lower = 0, upper = dat.size() / 2;
@@ -41,11 +47,6 @@ int FusionProcessor::find_extreme(std::vector<float> &dat, int partitions,
   }
 
   return valid_extreme ? (upper + lower) / 2 : 0;
-}
-
-FusionProcessor::FusionProcessor(int width, int height) {
-  image_width = width;
-  image_height = height;
 }
 
 void FusionProcessor::intersection_knockout(DepthMap &depth_map,
@@ -141,12 +142,16 @@ float FusionProcessor::estimate_distance(DepthMap &depth_map,
     }
   }
 
-  for (int i = 0; i < x_fdext.size(); i++)
+  for (int i = 0; i < x_fdext.size(); i++) {
+    float depth = depth_map.get_depth(x_fdext[i], y_fdext[i]);
+    if (!std::isnan(depth))
+      extrema_clusters.add_point(depth, false);
     depth_map.set_depth(x_fdext[i], y_fdext[i], NAN);
+  }
 
   // Remove "dirty" data; depth values that didn't qualify as extreme, but that
   // are remarkably close to values that did
-  float dirty_distance_avg =
+  /*float dirty_distance_avg =
       dirty_distance_total / dirty_distance_points_processed;
   ROS_INFO("[estimate_distance] Dirty distance is %f m", dirty_distance_avg);
 
@@ -158,6 +163,13 @@ float FusionProcessor::estimate_distance(DepthMap &depth_map,
         if (sim >= DIRTY_SIMILARITY_THRESH)
           depth_map.set_depth(r + X_ALPHA, c + Y_ALPHA, NAN);
       }
+    }*/
+
+  for (int r = focus_box.xmin; r <= focus_box.xmax; r++)
+    for (int c = focus_box.ymin; c <= focus_box.ymax; c++) {
+      float depth = depth_map.get_depth(r + X_ALPHA, c + Y_ALPHA);
+      if (!extrema_clusters.add_point(depth, true))
+        depth_map.set_depth(r + X_ALPHA, c + Y_ALPHA, NAN);
     }
 
   // Assemble a set of points that will be averaged for the final answer
