@@ -74,10 +74,12 @@ bool PointClusters::add_point(float point, bool virt) {
     }
   }
 
+  // Point joins a pre-existing set
   if (best_cluster_ind != -1) {
     if (!virt)
       clusters[best_cluster_ind].add_point(point);
     return true;
+  // Point becomes the start of a new set
   } else {
     if (!virt) {
       PointCluster new_cluster;

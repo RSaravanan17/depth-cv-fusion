@@ -105,7 +105,7 @@ float FusionProcessor::estimate_distance(DepthMap &depth_map,
   ROS_INFO("[estimate_distance] Middlemost focus box position has depth %f m",
       mid_depth);
 
-  // STEP 1 - Identify "extreme" values in the depth map and cluster them
+  // STEP 1 - Identify and remove "extreme" ranges of data
   std::vector<float> x_fdext, y_fdext;
 
   // Remove extreme vertical ranges

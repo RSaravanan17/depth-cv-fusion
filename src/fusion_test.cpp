@@ -3,6 +3,9 @@
 
 #include <ros/ros.h>
 
+/**
+  Receives depth maps and RGB images and puts them through the algorithm
+*/
 class FusionProc {
 protected:
   ros::NodeHandle *nh;
@@ -15,6 +18,9 @@ protected:
   std::string target_label;
 
 public:
+  /**
+    @brief Creates a processor for a particular object
+  */
   FusionProc(ros::NodeHandle *nh, std::string target_label) {
     this->nh = nh;
     pub_depth_knockout = nh->advertise<sensor_msgs::Image>("depth_knockout", 1);
@@ -24,6 +30,9 @@ public:
     this->target_label = target_label;
   }
 
+  /**
+    @brief Load the RGB image into the processor
+  */
   void receive_rgb(const sensor_msgs::Image::ConstPtr &msg) {
     if (rgb_loaded)
       return;
@@ -43,6 +52,9 @@ public:
       process();
   }
 
+  /**
+    @brief Load the depth map into the processor
+  */
   void receive_depth(const sensor_msgs::Image::ConstPtr &msg) {
     if (ir_loaded)
       return;
@@ -59,6 +71,10 @@ public:
       process();
   }
 
+  /**
+    @brief Runs the proximity estimation algorithm. Called after both a depth
+      map and an RGB image have been received
+  */
   void process() {
     FusionProcessor proc(image_width, image_height, rgb);
 
@@ -76,11 +92,6 @@ public:
 
     float depth = proc.estimate_distance(depth_map, boxes, focus_index);
     pub_depth_knockout.publish(depth_map.get_image_msg());
-
-    cv_bridge::CvImage depth_thresh_out;
-    depth_thresh_out.encoding = sensor_msgs::image_encodings::TYPE_32FC1;
-    // depth_thresh_out.image = proc.depth_thresh;
-    pub_depth_thresh.publish(depth_thresh_out.toImageMsg());
 
     ROS_INFO("Estimated distance: %f", depth);
   }
