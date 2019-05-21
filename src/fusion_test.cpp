@@ -9,6 +9,7 @@ protected:
   ros::Publisher pub_depth_knockout, pub_depth_thresh;
   darknet_ros_msgs::BoundingBoxes boxes;
   DepthMap depth_map;
+  cv::Mat rgb;
   int image_width, image_height;
   bool ir_loaded, rgb_loaded;
   std::string target_label;
@@ -33,6 +34,7 @@ public:
     cv_sweep(*nh, *msg, &boxes);
     image_width = msg->width;
     image_height = msg->height;
+    rgb = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8)->image;
     rgb_loaded = true;
 
     ROS_INFO("Sweep complete.");
@@ -58,7 +60,7 @@ public:
   }
 
   void process() {
-    FusionProcessor proc(image_width, image_height);
+    FusionProcessor proc(image_width, image_height, rgb);
 
     int focus_index = -1;
     for (int i = 0; i < boxes.bounding_boxes.size(); i++)
@@ -77,7 +79,7 @@ public:
 
     cv_bridge::CvImage depth_thresh_out;
     depth_thresh_out.encoding = sensor_msgs::image_encodings::TYPE_32FC1;
-    depth_thresh_out.image = proc.depth_thresh;
+    // depth_thresh_out.image = proc.depth_thresh;
     pub_depth_thresh.publish(depth_thresh_out.toImageMsg());
 
     ROS_INFO("Estimated distance: %f", depth);
@@ -87,7 +89,7 @@ public:
 int main(int argc, char **argv) {
   ros::init(argc, argv, "fusion_test_node");
   ros::NodeHandle nh;
-  FusionProc proc(&nh, "keyboard");
+  FusionProc proc(&nh, "chair");
 
   ros::Duration(1.0).sleep();
 

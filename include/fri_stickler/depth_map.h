@@ -1,4 +1,8 @@
+#ifndef DEPTH_MAP_H
+#define DEPTH_MAP_H
+
 #include <cv_bridge/cv_bridge.h>
+#include <darknet_ros_msgs/CheckForObjectsAction.h>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
@@ -51,4 +55,9 @@ public:
     @brief Gets a pointer to the internal matrix
   */
   cv::Mat* get_mat();
+
+  cv::Mat get_sub_map(darknet_ros_msgs::BoundingBox box,
+      const float X_ALPHA, const float Y_ALPHA);
 };
+
+#endif

@@ -1,3 +1,6 @@
+#ifndef FUSION_H
+#define FUSION_H
+
 #include "fri_stickler/clustering.h"
 #include "fri_stickler/depth_map.h"
 
@@ -13,13 +16,19 @@
 */
 class FusionProcessor {
 protected:
+  const int ALGO_STEPS = 3;
+  const int ALGO_STEP_KNOCKOUT = 0;
+  const int ALGO_STEP_EXTREMA = 1;
+  const int ALGO_STEP_CLUSTER = 2;
+  const int ALGO_STEP_FRINGE = 3;
+
   // Arbitrary constants for aligning the IR and RGB images from the Kinect
-  const float X_ALPHA = 22; // 27 for keyboard, 22 for mug, 0 for chair
+  const float X_ALPHA = 0; // 27 for keyboard, 22 for mug, 0 for chair
   const float Y_ALPHA = -30; // Don't touch
 
   // find_extreme configuration
-  const float FDEXT_MINIMUM_EXTREME = 0.1;
-  const int FDEXT_PARTITIONS = 8;
+  const float FDEXT_MINIMUM_EXTREME = 0.5;
+  const int FDEXT_PARTITIONS = 16;
   const int FDEXT_THOROUGHNESS = 3;
 
   // Misc algorithm configuration
@@ -33,16 +42,16 @@ protected:
   float dirty_distance_total;
   int dirty_distance_points_processed;
 
-public:
-  cv::Mat depth_thresh;
+  cv::Mat base_image;
 
+public:
   /**
     Creates a new processor.
 
     @param width pixel width of processed RGB images
     @param height pixel height of processed RGB images
   */
-  FusionProcessor(int width, int height);
+  FusionProcessor(int width, int height, cv::Mat base_image);
 
   /**
     Estimates the location of greatest slope in a vector of depth data.
@@ -78,3 +87,5 @@ public:
   float estimate_distance(DepthMap &depth_map,
       darknet_ros_msgs::BoundingBoxes &boxes, int focus_index);
 };
+
+#endif

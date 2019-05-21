@@ -20,7 +20,7 @@ void DepthMap::set_depth(int x, int y, float depth) {
   if (x < 0 || x > get_width() || y < 0 || y > get_height())
     return;
 
-  depth_map.at<float>(y, x, 0) = depth; // Not sure why y, x
+  depth_map.at<float>(y, x, 0) = depth;
 }
 
 int DepthMap::get_width() {
@@ -41,4 +41,20 @@ sensor_msgs::Image DepthMap::get_image_msg() {
 
 cv::Mat* DepthMap::get_mat() {
   return &depth_map;
+}
+
+cv::Mat DepthMap::get_sub_map(darknet_ros_msgs::BoundingBox box,
+    const float X_ALPHA, const float Y_ALPHA) {
+  const float DEPTH_MAX = 5;
+  const float DEPTH_MIN = 0;
+  cv::Mat sub(box.ymax - box.ymin, box.xmax - box.xmin, CV_8UC1);
+
+  for (int x = 0; x < sub.cols; x++)
+    for (int y = 0; y < sub.rows; y++) {
+      float depth = get_depth(x + box.xmin + X_ALPHA, y + box.ymin + Y_ALPHA);
+      uint8_t gray = std::isnan(depth) ? 0 : (255 - (depth / DEPTH_MAX) * 255);
+      sub.at<uint8_t>(y, x, 0) = gray;
+    }
+
+  return sub;
 }

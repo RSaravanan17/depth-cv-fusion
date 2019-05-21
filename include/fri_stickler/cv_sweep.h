@@ -1,3 +1,6 @@
+#ifndef CV_SWEEP_H
+#define CV_SWEEP_H
+
 #include <actionlib/client/simple_action_client.h>
 #include <cv_bridge/cv_bridge.h>
 #include <darknet_ros_msgs/CheckForObjectsAction.h>
@@ -41,3 +44,5 @@ bool cv_sweep(ros::NodeHandle &nh, const sensor_msgs::Image &image,
 */
 bool cv_sweep_local(ros::NodeHandle &nh, const std::string &image_path,
     darknet_ros_msgs::BoundingBoxes *dest);
+
+#endif

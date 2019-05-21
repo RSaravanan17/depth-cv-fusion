@@ -3,6 +3,7 @@
 #include <cmath>
 #include <iostream>
 #include <math.h>
+#include <ros/ros.h>
 
 PointCluster::PointCluster() {
   computed = false;
@@ -39,6 +40,10 @@ float PointCluster::stdev() {
     compute();
 
   return cluster_stdev;
+}
+
+int PointCluster::n() {
+  return points.size();
 }
 
 std::vector<float> PointCluster::get_points() {
@@ -91,13 +96,27 @@ float PointClusters::rate_fit(PointCluster &cluster, float point) {
   return NAN;
 }
 
-void PointClusters::summarize() {
+PointCluster* PointClusters::get_largest_cluster() {
+  int largest_ind = -1;
+  for (int i = 0; i < clusters.size(); i++)
+    if (largest_ind == -1 || clusters[i].n() > clusters[largest_ind].n())
+      largest_ind = i;
+  return largest_ind == -1 ? nullptr : &clusters[largest_ind];
+}
+
+void PointClusters::summarize(bool verbose) {
   for (int i = 0; i < clusters.size(); i++) {
     PointCluster c = clusters[i];
-    std::cout << "Cluster; u=" << c.mean() << ", s=" << c.stdev() << std::endl;
-    std::vector<float> points = c.get_points();
-    for (int j = 0; j < points.size(); j++)
-      std::cout << points[j] << " ";
-    std::cout << std::endl;
+    ROS_INFO("Cluster %d; u=%f, s=%f, n=%d", i, c.mean(), c.stdev(), c.n());
+    if (verbose) {
+      std::vector<float> points = c.get_points();
+      for (int j = 0; j < points.size(); j++)
+        std::cout << points[j] << " ";
+      std::cout << std::endl;
+    }
   }
+}
+
+int PointClusters::num_clusters() {
+  return clusters.size();
 }
